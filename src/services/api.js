@@ -7,8 +7,13 @@ const api = axios.create({
   },
 });
 
-// Automatically inject JWT access token into requests if available
+
 api.interceptors.request.use((config) => {
+
+  if (config.url && (config.url.includes('accounts/register/') || config.url.includes('accounts/login/'))) {
+    return config;
+  }
+
   const token = localStorage.getItem('access_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;

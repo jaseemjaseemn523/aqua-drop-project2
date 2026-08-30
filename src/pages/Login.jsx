@@ -65,8 +65,6 @@ export default function Login() {
 
     try {
       if (activeTab === "register") {
-        // രജിസ്‌ട്രേഷൻ ചെയ്യുമ്പോൾ ഡിഫോൾട്ടായി CUSTOMER ആയിരിക്കും, 
-        // അഡ്മിൻ അക്കാൗണ്ടുകൾ Django Admin വഴിയാണ് ആഡ് ചെയ്യേണ്ടത്.
         await api.post("accounts/register/", {
           email: formData.email,
           username: formData.email.split("@")[0],
@@ -86,18 +84,20 @@ export default function Login() {
         
         localStorage.setItem("access_token", response.data.access);
         localStorage.setItem("refresh_token", response.data.refresh);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
         
-        const userData = response.data.user;
+        const userData = response.data.user || {};
+        localStorage.setItem("user", JSON.stringify(userData));
+        
         alert("Login Successful!");
 
-        // യൂസറുടെ റോൾ അനുസരിച്ച് പേജ് തിരിച്ചുവിടുന്നു (Redirect based on role)
-        if (userData.is_staff || userData.role === "ADMIN") {
-          window.location.href = "/admin-dashboard"; // അല്ലെങ്കിൽ അഡ്മിൻ പേജ് റൂട്ട്
-        } else if (userData.role === "DELIVERY") {
-          window.location.href = "/tracking"; // ഡെലിവറി ഓർഡർ പേജ്
+        // Role-based redirection
+        const userRole = userData.role;
+        if (userData.is_staff || userRole === "ADMIN") {
+          window.location.href = "/admin-dashboard"; 
+        } else if (userRole === "DELIVERY") {
+          window.location.href = "/tracking"; 
         } else {
-          window.location.href = "/products"; // സാധാരണ കസ്റ്റമർ പ്രൊഡക്റ്റ് പേജ്
+          window.location.href = "/products"; 
         }
       }
     } catch (err) {
