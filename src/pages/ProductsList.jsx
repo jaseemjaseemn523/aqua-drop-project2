@@ -23,7 +23,7 @@ export default function ProductsList() {
   }, []);
 
   const handleAddToCart = async (e, productId) => {
-    e.stopPropagation(); // പ്രൊഡക്റ്റ് കാർഡ് ക്ലിക്ക് ആകാതിരിക്കാൻ
+    e.stopPropagation(); 
     try {
       await api.post("cart/add/", {
         product_id: productId,
